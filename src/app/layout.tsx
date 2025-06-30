@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import AuthProvider from "./components/AuthProvider";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,15 +15,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FootyVerse",
-  description: "Welcome to FootyVerse. A website dedicated to the world of football.",
+  title: "F1-Verse",
+  description: "Welcome to F1-Verse. A website for Formula 1 fans.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: "#333",
+                color: "#fff",
+              },
+            }}
+          />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

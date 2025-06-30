@@ -1,14 +1,29 @@
-import NextAuth from "next-auth";
+import { User } from "@prisma/client";
+import NextAuth, { DefaultSession } from "next-auth";
 
-// Augment (perluas) tipe bawaan dari NextAuth
 declare module "next-auth" {
   /**
-   * Mengembalikan nilai saat menggunakan `useSession`, `getSession` atau `getServerSession`
+   * Mendefinisikan ulang tipe Session
    */
   interface Session {
     user: {
-      /** Properti `id` sekarang ada di sini */
+      /** Properti id, nama, email, gambar dari default session */
       id: string;
-    } & DefaultSession["user"]; // & gabungkan dengan tipe user default (name, email, image)
+      name: string | null;
+      email: string | null;
+      image: string | null;
+
+      /** Properti baru dari skema Prisma Anda */
+      favoriteDriverIds: string[];
+      favoriteTeamIds: string[];
+    } & DefaultSession["user"];
+  }
+
+  /** * Anda juga bisa mendefinisikan ulang tipe User jika perlu
+   * untuk callback di route.ts
+   */
+  interface User {
+    favoriteDriverIds: string[];
+    favoriteTeamIds: string[];
   }
 }

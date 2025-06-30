@@ -2,25 +2,21 @@ import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import ProfileClient from "./ProfileClient";
-import { getProfileData } from "../../../lib/data";
 
-export default async function ProfilePage() {
+async function getProfileData() {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     redirect("/api/auth/signin?callbackUrl=/profile");
   }
+  return { user: session.user };
+}
 
-  const { favoriteTeams, favoritePlayers } = await getProfileData(session.user.id);
-
-  const profileData = {
-    user: session.user,
-    favoriteTeams,
-    favoritePlayers,
-  };
+export default async function ProfilePage() {
+  const { user } = await getProfileData();
 
   return (
-    <main className="p-4 sm:p-6 md:p-8 bg-gray-100 min-h-screen">
-      <ProfileClient data={profileData} />
+    <main className="p-4 sm:p-6 md:p-8 bg-gray-900 min-h-screen text-white">
+      <ProfileClient user={user} />
     </main>
   );
 }

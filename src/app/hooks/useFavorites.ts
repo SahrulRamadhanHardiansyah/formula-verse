@@ -1,69 +1,60 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useMemo, useCallback } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
-type Favorites = {
-  teams: number[];
-  players: number[];
-};
+interface IUseFavorite {
+  id: number;
+  type: "driver" | "team";
+}
 
-export function useFavorites() {
-  const [favorites, setFavorites] = useState<Favorites>({ teams: [], players: [] });
-  const [isLoading, setIsLoading] = useState(true);
+export const useFavorite = ({ id, type }: IUseFavorite) => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchFavorites = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch("/api/favorites");
-        const data: Favorites = await response.json();
-        setFavorites(data);
-      } catch (error) {
-        console.error("Failed to fetch favorites", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchFavorites();
-  }, []);
+  const currentUser = session?.user;
+
+  const isFavorited = useMemo(() => {
+    if (!currentUser) {
+      return false;
+    }
+
+    const list = type === "driver" ? currentUser.favoriteDriverIds : currentUser.favoriteTeamIds;
+
+    return list?.includes(String(id)) || false;
+  }, [currentUser, id, type]);
 
   const toggleFavorite = useCallback(
-    async (type: "team" | "player", id: number) => {
-      const isCurrentlyFavorite = type === "team" ? favorites.teams.includes(id) : favorites.players.includes(id);
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
 
-      const method = isCurrentlyFavorite ? "DELETE" : "POST";
+      if (!currentUser) {
+        toast.error("Anda harus login untuk menambahkan favorit.");
+        return;
+      }
 
       try {
-        if (isCurrentlyFavorite) {
-          setFavorites((prev) => ({ ...prev, [type === "team" ? "teams" : "players"]: prev[type === "team" ? "teams" : "players"].filter((favId) => favId !== id) }));
+        if (isFavorited) {
+          await axios.delete(`/api/favorites?type=${type}&id=${id}`);
+          toast.success("Dihapus dari favorit");
         } else {
-          setFavorites((prev) => ({ ...prev, [type === "team" ? "teams" : "players"]: [...prev[type === "team" ? "teams" : "players"], id] }));
+          await axios.post("/api/favorites", { type, id: String(id) });
+          toast.success("Ditambahkan ke favorit!");
         }
-
-        await fetch("/api/favorites", {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ type, id }),
-        });
+        router.refresh();
       } catch (error) {
-        console.error(`Failed to ${method} favorite`, error);
+        toast.error("Terjadi kesalahan.");
+        console.error(error);
       }
     },
-    [favorites]
-  );
-
-  const isFavorite = useCallback(
-    (type: "team" | "player", id: number) => {
-      if (isLoading) return false;
-      return type === "team" ? favorites.teams.includes(id) : favorites.players.includes(id);
-    },
-    [favorites, isLoading]
+    [currentUser, isFavorited, id, type, router]
   );
 
   return {
-    favorites,
+    isFavorited,
     toggleFavorite,
-    isFavorite,
-    isLoadingFavorites: isLoading,
   };
-}
+};

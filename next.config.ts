@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
     remotePatterns: [
       {
@@ -15,6 +14,12 @@ const nextConfig: NextConfig = {
         hostname: "media.api-sports.io",
         port: "",
         pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "media-1.api-sports.io",
+        port: "",
+        pathname: "/formula-1/**",
       },
     ],
   },
