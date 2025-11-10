@@ -1,4 +1,3 @@
-```markdown
 # Formula-Verse
 
 Formula-Verse adalah aplikasi web yang didedikasikan untuk para penggemar Formula 1. Aplikasi ini menyediakan informasi terkini mengenai klasemen pembalap dan konstruktor, jadwal balapan, serta detail mendalam tentang pembalap dan tim favorit Anda.
@@ -115,5 +114,3 @@ Berikut adalah daftar endpoint API yang tersedia di aplikasi:
 | `DELETE`| `/api/favorites`              | Menghapus item dari favorit                      |
 | `GET`  | `/api/favorites-details`      | Mendapatkan detail dari item yang difavoritkan   |
 | `*`    | `/api/auth/[...nextauth]`     | Endpoint untuk proses autentikasi NextAuth.js    |
-
-```
