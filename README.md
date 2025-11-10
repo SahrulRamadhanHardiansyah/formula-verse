@@ -22,7 +22,7 @@ Formula-Verse adalah aplikasi web yang didedikasikan untuk para penggemar Formul
 -   **Framework**: Next.js (App Router)
 -   **Bahasa**: TypeScript
 -   **ORM**: Prisma
--   **Database**: SQL (misalnya PostgreSQL, MySQL)
+-   **Database**: PostgreSQL
 -   **Styling**: Tailwind CSS
 -   **Autentikasi**: NextAuth.js
 -   **Linting**: ESLint
@@ -60,7 +60,7 @@ formula-verse/
 
 1.  **Clone repository ini:**
     ```bash
-    git clone https://github.com/username/formula-verse.git
+    git clone https://github.com/SahrulRamadhanHardiansyah/formula-verse.git
     cd formula-verse
     ```
 
